@@ -1,0 +1,18 @@
+body{
+    color: rgba(18, 75, 181, 0.48);
+/*    把顏色框起來打command+E* 可以看到調色盤/
+/*RGBa  a 為透明度*/
+}
+
+blockquote { color: blue ; }
+h1 { color: rgba(0,0,0,0.5); 
+     font-size: 50px;
+}
+strong { color: #00f; color: #f00;} 
+/*兩個屬性衝突時，後者為大*/
+
+/* p { color: navy } */
+
+blockquote {
+color: #fff ; background-color: gold;
+}
