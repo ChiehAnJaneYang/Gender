@@ -46,6 +46,7 @@
         <p><strong id="C_P"></strong></p>
         <p id="Major"></p>
         <p id="Program"></p>
+        <p id="SUM"></p>
     </div>
 
     <script>
@@ -132,6 +133,7 @@
                 tooltip.select("#C_P").text(d.College);
                 tooltip.select("#Major").text(d.Major);
                 tooltip.select("#Program").text(d.Program);
+                tooltip.select("#SUM").text("入學人數： "+d.SUM);
                 tooltip.classed("hidden",false);
             })
             .on("mouseout",function(d){
