@@ -1,139 +1,214 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <title>D3 Course</title>
-    <script src ="random.js">
-    </script>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
-    
+    <title>Untitled Document</title>
+    <script src="https://d3js.org/d3.v3.js"></script>
     <style>
-        p{
-            border: 2px solid green;
-            width: 50px;
-            height: 30px;
-            font-size: 20px;
-            text-align: center;
+        body {
+            background: #eee;
         }
+        
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: auto;
+        }
+        
+        .axis text {
+            font-size: 12px;
+        }
+        
+        #tooltip {
+            position: absolute;
+             left: 20px; 
+             top:  100px; 
+            /*用D3條這兩個數值，決定提示框的位置*/
+            background: rgba(255, 255, 255, 0.3);
+            width: auto;
+            height: auto;
+            padding: 0px 10px;
+            border-radius: 5px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+        }
+         #tooltip.hidden{
+          display: none;
+        } 
+
     </style>
-    
 </head>
 
 <body>
-<p></p>
-<input type="button" onclick="luanch()" value="Click">
+
+    <div id="tooltip" class="hidden">
+        <p><strong id="C_P"></strong></p>
+        <p id="Major"></p>
+        <p id="Program"></p>
+    </div>
+
     <script>
-        function luanch(){
-        var num =random(1,50);
-        console.log(num);
-        d3.select("p").text(num);
-        }
-        
-    </script>
-    
-<hr>
-    <svg width="300", height="200">
-       <circle cx="150" cy="120" r="15"></circle>
-       <rect x="160" y="45" width="5" height="78"></rect>
-        
-    </svg>
-    
-<!--    bar    -->
-<hr>
+        var w = 900;
+        var h = 600;
+        var padding = 90;
+        var letterList = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "M", "N", "O", "P", "Q", "T", "U", "V", "W", "X", "Z"];
 
-<svg width="400" height="400" id="svg1">
-        
-    </svg>
+        svg();
 
-   <script>
-        var random= function(N, M) {N=N+1;
-        return Math.floor(Math.random()*(M-N+1)+N);
-    }
-    </script>
-    <script>
-        
-        for(var i=0; i<20; i=i+1){
-            var num = random(20,300);
-            
-        d3.select("#svg1")
-          .append("rect")
-          .attr({
-            "x":10,
-            "y":10+12*i,
-            "width": num,
-            "height": 10,
-            "fill": "red"
-        })
+        d3.csv("NTU_after97_filtered.csv", function(dataSet) {
+            bind(dataSet);
+            render(dataSet);
+            btnList(dataSet);
+        });
 
-        d3.select("#svg1")
-          .append("text")
-          .attr({
-            "x": 10+num+15,
-            "y": 10+12*i+8,
-            "font-size":9
-        }).text(num);
-            
-            
-            
+
+        function svg() {
+            d3.select("body").append("svg").attr({
+                width: w,
+                height: h
+            });
+            d3.select("svg").append("g").append("rect").attr({
+                width: "100%",
+                height: "100%",
+                fill: "white"
+            });
+            d3.select("svg").append("g").attr("id", "axisX");
+            d3.select("svg").append("g").attr("id", "axisY");
         }
 
-        
-    </script>
-
-
-
-<!--poly-->
-<hr>
-
-<svg width="600" height="600" id="svg2">
-        
-    </svg>
-
-   <script>
-        var random= function(N, M) {N=N+1;
-        return Math.floor(Math.random()*(M-N+1)+N);
-    }
-    </script>
-    <script>
-        var points= "10,10 ";
-        
-        for(var i=0; i<20; i=i+1){
-            var num = random(20,300);
-        
-        points= points+(10+num)+","+(10+12*i)+" ";
-            
-        d3.select("#svg2")
-          .append("circle")
-          .attr({
-            "cx":10+num,
-            "cy":10+12*i,
-            "r": 4,
-            "fill": "red"
-        })
-
-        d3.select("#svg2")
-          .append("text")
-          .attr({
-            "x": 10+num+15,
-            "y": 10+12*i+4,
-            "font-size":9
-        }).text(num);   
-            
+        function bind(dataSet) {
+            var selection = d3.select("svg")
+                .selectAll("circle")
+                .data(dataSet);
+            selection.enter().append("circle");
+            selection.exit().remove();
         }
 
-        
-        points=points+"10," +(10+12*20);
-        
-        
-        d3.select("#svg2")
-          .append("polyline")
-          .attr({
-            "points": points,
-            "stroke": "black",
-            "fill": "rgba(0,0,0,0)"
-        })        
-        
-        
+        function render(dataSet) {
+            var xScale = d3.time.scale()
+                .domain([new Date(d3.min(dataSet, function(d) {
+                    return +d.Year;
+                })), new Date(d3.max(dataSet, function(d) {
+                    return +d.Year;
+                }))])
+                .range([padding, w - padding]);
+            var yScale = d3.scale.linear()
+                .domain([0, 100])
+                .range([h - padding, padding]);
+            var rScale = d3.scale.linear()
+                .domain([d3.min(dataSet, function(d) {
+                    return +d.SUM;
+                }), d3.max(dataSet, function(d) {
+                    return +d.SUM;
+                })])
+                .range([5, 20]);
+            var fScale = d3.scale.category20b();
+
+            //開始畫圈圈
+            d3.selectAll("circle")
+                .attr({
+                    cx: function(d) {
+                        return xScale(+d.Year);
+                    },
+                    cy: function(d) {
+                        return yScale(+d.Ratio);
+                    },
+                    r: function(d) {
+                        return rScale(+d.SUM);
+                    },
+                    fill: function(d) {
+                        return fScale(letterList.indexOf(+d.Code));
+                    }
+                }).on("mouseover", function(d){
+                    var posX     = d3.select(this).attr("cx");
+                    var posY     = d3.select(this).attr("cy");
+                    var tooltip = d3.select("#tooltip")
+                                    .style({
+                                        "left": (+posX+10) + "px",
+                                        "top" : (+posY+20) + "px"
+                                    });
+                
+                tooltip.select("#C_P").text(d.College);
+                tooltip.select("#Major").text(d.Major);
+                tooltip.select("#Program").text(d.Program);
+                tooltip.classed("hidden",false);
+            })
+            .on("mouseout",function(d){
+                d3.select("#tooltip").classed("hidden",true);
+            });
+
+            //開始畫x,y軸線 
+            var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+            var yAxis = d3.svg.axis().scale(yScale).orient("left");
+            d3.select("svg")
+                .select("g#axisY")
+                .attr("class", "axis")
+                .attr("transform", "translate(" + (padding - 10) + ",0)")
+                .call(yAxis);
+            d3.select("svg")
+                .select("g#axisX")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + (h - padding + 10) + ")")
+                .call(xAxis);
+
+
+        }
+
+        function btnList(dataSet) {          
+            var C_PArr = dataSet.map(function(d) {
+                return d.C_P;
+            });
+            var MajorArr = dataSet.map(function(d) {
+                return d.Major;
+            });
+            var uniqueC_PArr = unique(C_PArr);
+            var uniqueMajorArr = unique(MajorArr);
+
+
+            //畫下拉式選單
+            var selection = d3.select("body")
+                .append("select")
+                .selectAll("option")
+                .data(uniqueC_PArr);
+
+            selection.enter()
+                .append("option")
+                .attr({
+                    "value": function(d) {
+                        return d;
+                    }
+                })
+                .text(function(d) {
+                    return d;
+                });
+
+            d3.select("select").on("change", function() {
+                var value = d3.select("select")
+                .property("value");
+                update(value);
+            })
+
+
+            function update(C_PName) {
+                var newDataSet = dataSet.filter(function(d) {
+                    return d.C_P === C_PName;
+                });
+                bind(newDataSet);
+                render(newDataSet);
+            }
+
+            function unique(array) {
+                var n = [];
+                for (var i = 0; i < array.length; i++) {
+                    if (n.indexOf(array[i]) == -1) {
+                        n.push(array[i]);
+                    }
+                }
+                return n;
+            }
+        }
+
     </script>
 
 </body>
