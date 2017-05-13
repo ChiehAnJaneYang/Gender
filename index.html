@@ -45,7 +45,6 @@
     <div id="tooltip" class="hidden">
         <p><strong id="C_P"></strong></p>
         <p id="Major"></p>
-        <p id="Program"></p>
         <p id="SUM"></p>
     </div>
 
@@ -119,7 +118,7 @@
                         return rScale(+d.SUM);
                     },
                     fill: function(d) {
-                        return fScale(letterList.indexOf(+d.Code));
+                        return fScale(letterList.indexOf(d.Code));
                     }
                 }).on("mouseover", function(d){
                     var posX     = d3.select(this).attr("cx");
@@ -132,7 +131,6 @@
                 
                 tooltip.select("#C_P").text(d.College);
                 tooltip.select("#Major").text(d.Major);
-                tooltip.select("#Program").text(d.Program);
                 tooltip.select("#SUM").text("入學人數： "+d.SUM);
                 tooltip.classed("hidden",false);
             })
