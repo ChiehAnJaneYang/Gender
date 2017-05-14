@@ -106,7 +106,7 @@
             var fScale = d3.scale.category20();
 
             //開始畫圈圈
-            d3.selectAll("circle")
+            d3.selectAll("circle").transition().duration(1000)
                 .attr({
                     cx: function(d) {
                         return xScale(+d.Year);
@@ -120,7 +120,9 @@
                     fill: function(d) {
                         return fScale(d.Major);
                     }
-                }).on("mouseover", function(d){
+                });
+            d3.selectAll("circle")
+                .on("mouseover", function(d){
                     var posX     = d3.select(this).attr("cx");
                     var posY     = d3.select(this).attr("cy");
                     var tooltip = d3.select("#tooltip")
