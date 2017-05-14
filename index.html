@@ -102,8 +102,8 @@
                 }), d3.max(dataSet, function(d) {
                     return +d.SUM;
                 })])
-                .range([5, 20]);
-            var fScale = d3.scale.category20b();
+                .range([5, 15]);
+            var fScale = d3.scale.category20();
 
             //開始畫圈圈
             d3.selectAll("circle")
@@ -118,7 +118,7 @@
                         return rScale(+d.SUM);
                     },
                     fill: function(d) {
-                        return fScale(letterList.indexOf(d.Code));
+                        return fScale(d.Major);
                     }
                 }).on("mouseover", function(d){
                     var posX     = d3.select(this).attr("cx");
