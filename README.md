@@ -2,6 +2,6 @@
 
 * [D3 project](https://victoria-yang.github.io/D3.js-NTU-gender-diversity/index.html)
 
-<img align = "center" width = "750" src="https://github.com/victoria-yang/D3.js-NTU-gender-diversity/blob/master/eco_dep.png">
+<img align = "center" width = "850" src="https://github.com/victoria-yang/D3.js-NTU-gender-diversity/blob/master/ntu_sex_ratio.gif">
 
 
